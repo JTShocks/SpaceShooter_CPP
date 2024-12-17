@@ -1,5 +1,3 @@
 #pragma once
-class draw
-{
-};
-
+void prepareScene(void);
+void presentScene(void);
