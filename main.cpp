@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	memset(&app, 0, sizeof(App));
 
 	initSDL();
-	atexit(SDL_TLSCleanup);
+	atexit(cleanup);
 
 	while (1)
 	{
@@ -24,4 +24,9 @@ int main(int argc, char* argv[])
 		SDL_Delay(16);
 	}
 	return 0;
+}
+
+void cleanup()
+{
+	std::cout << "Cleaning up\n";
 }

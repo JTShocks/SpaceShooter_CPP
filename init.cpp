@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "init.h"
+#include "SDL_image.h"
 using namespace std;
 
 
@@ -9,6 +10,7 @@ void initSDL(void)
 {
 	int rendererFlags = SDL_RENDERER_ACCELERATED;
 	int windowFlags = 0;
+	IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -33,3 +35,4 @@ void initSDL(void)
 	}
 
 }
+

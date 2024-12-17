@@ -9,8 +9,14 @@ struct Mouse {
 struct App {
 	SDL_Renderer* renderer;
 	SDL_Window* window;
-	//Mouse mouse;
+	Mouse mouse;
 }; //Use this for referencing everything in the app as it is running
+
+struct Entity {
+	int x;
+	int y;
+	SDL_Texture* texture;
+};
 
 
 

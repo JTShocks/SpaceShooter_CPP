@@ -4,7 +4,7 @@
 
 void doInput(void)
 {
-	//SDL_GetMouseState(&app.mouse.x, &app.mouse.y);
+	SDL_GetMouseState(&app.mouse.x, &app.mouse.y);
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
