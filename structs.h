@@ -7,8 +7,10 @@ typedef struct {
 } Mouse; //Use this for referencing the mouse
 
 typedef struct {
-	SDL_Renderer *renderer;
-	SDL_Window *window;
+	SDL_Renderer* renderer;
+	SDL_Window* window;
 	Mouse mouse;
 } App; //Use this for referencing everything in the app as it is running
+
+
 
