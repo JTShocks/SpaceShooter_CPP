@@ -7,61 +7,68 @@
 #include "draw.h"
 #include "input.h"
 #include <cstdlib>
+#include "stage.h"
 using namespace std;
 
 App app;
+static void capFrameRate(long* then, float* remainder)
+{
+	long wait, frameTime;
+
+	wait = 16 + *remainder;
+
+	*remainder -= (int)*remainder;
+
+	frameTime = SDL_GetTicks() - *then;
+
+	wait -= frameTime;
+
+	if (wait < 1)
+	{
+		wait = 1;
+	}
+
+	SDL_Delay(wait);
+
+	*remainder += 0.667;
+
+	*then = SDL_GetTicks();
+}
 int main(int argc, char* argv[])
 {
-	memset(&app, 0, sizeof(App));
+
+	long then;
+	float remainder;
+
+	memset(&app, 0, (sizeof(App)));
 
 	initSDL();
 	
-	//TO:DO > Replace temp texture for bullet
-	bullet.texture = loadTexture("Sprites/player.png");
-
 	atexit(cleanup);
+
+	initStage();
+
+	then = SDL_GetTicks();
+
+	remainder = 0;
 
 	while (1)
 	{
 		prepareScene();
+
 		doInput();
+		app.delegate.logic();
 
-		//Moving the player
-		player.position += glm::vec2(app.inputVector[0] * 4, app.inputVector[1] * 4);
-		player.position[0] = glm::clamp((int)player.position[0], 0, SCREEN_WIDTH-64);
-		player.position[1] = glm::clamp((int)player.position[1], 0, SCREEN_HEIGHT-64);
-
-		//Spawning the bullet
-		if (app.isShooting && bullet.health == 0)
-		{
-			bullet.position = player.position;
-			bullet.deltaPosition = glm::vec2(16, 0);
-			bullet.health = 1;
-		}
-
-		//Moving the bullet across the screen
-		bullet.position += bullet.deltaPosition;
-
-		//Draw the player sprite
-		blit(player.texture, player.position[0], player.position[1]);
-
-
-		//What happens when the bullet goes off screen/ out of bounds
-		if (bullet.position[0] > SCREEN_WIDTH)
-		{
-			bullet.health = 0;
-		}
-		if (bullet.health > 0)
-		{
-			//Draw bullet while it is alive
-			blit(bullet.texture, bullet.position[0], bullet.position[1]);
-		}
+		app.delegate.draw();
 
 		presentScene();
-		SDL_Delay(16);
+		
+		capFrameRate(&then, &remainder);
 	}
 	return 0;
 }
+
+
 
 void cleanup()
 {

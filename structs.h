@@ -27,8 +27,6 @@ struct App {
 	bool isMoving;
 	glm::vec2 inputVector;
 
-	int reload;
-
 	bool isShooting;
 }; //Use this for referencing everything in the app as it is running
 
@@ -40,6 +38,7 @@ struct Entity {
 	int height;
 
 	int health;
+	int reload;
 	SDL_Texture* texture;
 
 	//Linked list for chain of entities
@@ -47,8 +46,8 @@ struct Entity {
 };
 struct Stage {
 	//Details the effects of the stage elements
-	Entity fighterHead, * fighterTail;
-	Entity bulletHead, * bulletTail;
+	Entity fighterHead, *fighterTail;
+	Entity bulletHead, *bulletTail;
 };
 
 
