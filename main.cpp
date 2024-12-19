@@ -16,8 +16,7 @@ int main(int argc, char* argv[])
 	memset(&player, 0, sizeof(Entity));
 
 	initSDL();
-	player.x = 100;
-	player.y = 100;
+	player.position = glm::vec2(100, 100);
 	player.texture = loadTexture("Sprites/player.png");
 
 	atexit(cleanup);
@@ -26,12 +25,11 @@ int main(int argc, char* argv[])
 	{
 		prepareScene();
 		doInput();
-		blit(player.texture, player.x, player.y);
+		blit(player.texture, player.position[0], player.position[1]);
 		presentScene();
 
-		player.y += app.inputVector[1] * 4;
-		player.x += app.inputVector[0] * 4;
-
+		player.position += glm::vec2(app.inputVector[0] * 4,app.inputVector[1] * 4);
+		
 		SDL_Delay(16);
 	}
 	return 0;

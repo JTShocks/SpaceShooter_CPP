@@ -14,13 +14,16 @@ struct App {
 	Mouse mouse;
 
 	//Directions
-	bool hasMoveInput;
+	bool isMoving;
 	glm::vec2 inputVector;
+
+	bool isShooting;
 }; //Use this for referencing everything in the app as it is running
 
 struct Entity {
-	int x;
-	int y;
+	glm::vec2 position;
+	glm::vec2 deltaPosition;
+	int health;
 	SDL_Texture* texture;
 };
 
