@@ -4,8 +4,7 @@
 using namespace std;
 //Container for structs
 struct Mouse {
-	int x;
-	int y;
+	glm::vec2 mousePosition;
 }; //Use this for referencing the mouse
 
 struct App {
