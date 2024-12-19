@@ -1,6 +1,8 @@
 #include "draw.h"
 #include "common.h"
 #include "SDL_image.h"
+#include "stdlib.h"
+using namespace std;
 
 void prepareScene(void)
 {
@@ -13,11 +15,10 @@ void presentScene(void)
 	SDL_RenderPresent(app.renderer);
 }
 
-SDL_Texture* loadTexture(char* filename)
+SDL_Texture* loadTexture(const char* filename)
 {
 	SDL_Texture* texture;
 	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", filename);
-
 	texture = IMG_LoadTexture(app.renderer, filename);
 	return texture;
 }

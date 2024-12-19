@@ -3,3 +3,5 @@
 #include "defs.h"
 #include "SDL.h"
 #include "main.h"
+#include <iostream>
+#include <string>
