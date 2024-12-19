@@ -136,6 +136,7 @@
     <ClInclude Include="init.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="stage.h" />
     <ClInclude Include="structs.h" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +144,7 @@
     <ClCompile Include="init.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="player.png" />

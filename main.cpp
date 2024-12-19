@@ -10,18 +10,12 @@
 using namespace std;
 
 App app;
-Entity player;
-Entity bullet;
 int main(int argc, char* argv[])
 {
 	memset(&app, 0, sizeof(App));
-	memset(&player, 0, sizeof(Entity));
-	memset(&bullet, 0, sizeof(Entity));
 
 	initSDL();
-	player.position = glm::vec2(100, 100);
-	//Load textures
-	player.texture = loadTexture("Sprites/player.png");
+	
 	//TO:DO > Replace temp texture for bullet
 	bullet.texture = loadTexture("Sprites/player.png");
 
