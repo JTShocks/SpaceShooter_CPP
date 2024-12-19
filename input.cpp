@@ -29,6 +29,7 @@ void doKeyDown(SDL_KeyboardEvent* event)
 {
 	if (event->repeat == 0)
 	{
+		//Movement
 		if (event->keysym.scancode == SDL_SCANCODE_UP)
 		{
 			app.inputVector[1] = -1;
@@ -45,6 +46,11 @@ void doKeyDown(SDL_KeyboardEvent* event)
 		{
 			app.inputVector[0] = -1;
 		}
+		//Shooting
+		if (event->keysym.scancode == SDL_SCANCODE_SPACE)
+		{
+			app.isShooting = true;
+		}
 	}
 }
 
@@ -52,6 +58,7 @@ void doKeyUp(SDL_KeyboardEvent* event)
 {
 	if (event->repeat == 0)
 	{
+		//Movement
 		if (event->keysym.scancode == SDL_SCANCODE_UP)
 		{
 			app.inputVector[1] = 0;
@@ -67,6 +74,12 @@ void doKeyUp(SDL_KeyboardEvent* event)
 		if (event->keysym.scancode == SDL_SCANCODE_LEFT)
 		{
 			app.inputVector[0] = 0;
+		}
+
+		//Shooting
+		if (event->keysym.scancode == SDL_SCANCODE_SPACE)
+		{
+			app.isShooting = false;
 		}
 	}
 }
