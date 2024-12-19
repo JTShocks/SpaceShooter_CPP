@@ -4,7 +4,9 @@
 using namespace std;
 //Container for structs
 struct Mouse {
-	glm::vec2 mousePosition;
+	//specifically using ints to be compatible with SDL functions
+	int x;
+	int y;
 }; //Use this for referencing the mouse
 
 struct App {
