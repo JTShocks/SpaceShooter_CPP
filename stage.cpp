@@ -7,6 +7,7 @@ Stage stage;
 Entity* player;
 
 SDL_Texture* bulletTexture;
+SDL_Texture* enemyTexture;
 
 static void initPlayer()
 {
