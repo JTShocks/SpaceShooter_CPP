@@ -196,6 +196,7 @@ static void draw(void)
 {
 	drawPlayer();
 	drawBullets();
+	drawFighters();
 }
 
 
