@@ -35,8 +35,12 @@ static void fireBullet()
 	bullet->deltaPosition[0] = PLAYER_BULLET_SPEED;
 	bullet->health = 1;
 	bullet->texture = bulletTexture;
+	bullet->width = 16;
+	bullet->height = 8;
+
+
 	SDL_QueryTexture(bullet->texture, NULL, NULL, &bullet->width, &bullet->height);
-	bullet->position[1] += (player->height / 2) - (bullet->health / 2);
+	bullet->position[1] += (player->height / 2);
 
 	//Frames before firing again
 	player->reload = 8;
@@ -146,13 +150,16 @@ static void spawnEnemies()
 		//Assigning enemy values in struct
 		enemy->position = glm::vec2(SCREEN_WIDTH, (rand() % SCREEN_HEIGHT));
 		enemy->texture = enemyTexture;
+		enemy->width = 32;
+		enemy->height = 32;
 		SDL_QueryTexture(enemy->texture, NULL, NULL, &enemy->width, &enemy->height);
 
 		//Setting the velocity vector
 		//Random speed moving to the left, since they spawn on the right
 		enemy->deltaPosition[0] = -(2 + (rand() % 4));
 
-		//Resetting the spawn timer
+		//Resetting the spawn timer in frames
+		//Enemies will spawn at least every 30 seconds.
 		enemySpawnTimer = 30 + (rand() % 60);
 
 	}
@@ -170,7 +177,7 @@ static void logic(void)
 static void drawPlayer()
 {
 	//Draw the player sprite
-	blit(player->texture, player->position[0], player->position[1]);
+	blit(player->texture, player->position[0],player->position[1]);
 }
 
 static void drawBullets()
@@ -210,7 +217,7 @@ void initStage(void)
 
 	initPlayer();
 
-	bulletTexture = loadTexture("Sprites/player.png");
+	bulletTexture = loadTexture("Sprites/player_bullet.png");
 	enemyTexture = loadTexture("Sprites/player.png");
 
 	enemySpawnTimer = 0;
