@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 	long then;
 	float remainder;
 
-	memset(&app, 0, (sizeof(App)));
+	//memset(&app, 0, (sizeof(App)));
 
 	initSDL();
 	

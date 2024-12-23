@@ -9,6 +9,8 @@ Entity* player;
 SDL_Texture* bulletTexture;
 SDL_Texture* enemyTexture;
 
+int enemySpawnTimer;
+
 static void initPlayer()
 {
 	player = new Entity();
@@ -105,10 +107,62 @@ static void doBullets(void)
 		previous = b;
 	}
 }
+
+static void doFighters(void)
+{
+	Entity* e, * prev;
+	prev = &stage.fighterHead;
+
+	for (e = stage.fighterHead.next; e != NULL; e = e->next)
+	{
+		e->position += e->deltaPosition;
+
+		//Handling when enemy goes off screen
+		if (e != player && e->position[0] < -e->width)
+		{
+			if (e == stage.fighterTail)
+			{
+				stage.fighterTail = prev;
+			}
+
+			//Updating the chain of currently loaded fighters and freeing space for new fighters
+			prev->next = e->next;
+			free(e);
+			e = prev;
+		}
+	}
+}
+
+static void spawnEnemies()
+{
+	Entity* enemy;
+
+	if (--enemySpawnTimer <= 0)
+	{
+		enemy = new Entity();
+		stage.fighterTail->next = enemy;
+		stage.fighterTail = enemy;
+
+		//Assigning enemy values in struct
+		enemy->position = glm::vec2(SCREEN_WIDTH, (rand() % SCREEN_HEIGHT));
+		enemy->texture = enemyTexture;
+		SDL_QueryTexture(enemy->texture, NULL, NULL, &enemy->width, &enemy->height);
+
+		//Setting the velocity vector
+		//Random speed moving to the left, since they spawn on the right
+		enemy->deltaPosition[0] = -(2 + (rand() % 4));
+
+		//Resetting the spawn timer
+		enemySpawnTimer = 30 + (rand() % 60);
+
+	}
+}
 static void logic(void)
 {
 	doPlayer();
+	doFighters();
 	doBullets();
+	spawnEnemies();
 }
 
 
@@ -125,6 +179,15 @@ static void drawBullets()
 	for (b = stage.bulletHead.next; b != NULL; b = b->next)
 	{
 		blit(b->texture, b->position[0], b->position[1]);
+	}
+}
+
+static void drawFighters(void)
+{
+	Entity* e;
+	for (e = stage.fighterHead.next; e != NULL; e = e->next)
+	{
+		blit(e->texture, e->position[0], e->position[1]);
 	}
 }
 
@@ -147,5 +210,8 @@ void initStage(void)
 	initPlayer();
 
 	bulletTexture = loadTexture("Sprites/player.png");
+	enemyTexture = loadTexture("Sprites/player.png");
+
+	enemySpawnTimer = 0;
 
 }
