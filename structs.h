@@ -31,6 +31,8 @@ struct App {
 }; //Use this for referencing everything in the app as it is running
 
 struct Entity {
+
+	int side;
 	glm::vec2 position;
 	glm::vec2 deltaPosition;
 	//Determining area of collision

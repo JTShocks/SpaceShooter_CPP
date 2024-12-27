@@ -20,6 +20,7 @@ static void initPlayer()
 
 	player->position = glm::vec2(100, 100);
 	player->texture = loadTexture("Sprites/player.png");
+	player->side = PLAYER_SIDE;
 	SDL_QueryTexture(player->texture, NULL, NULL, &player->width, &player->height);
 	
 
@@ -37,13 +38,28 @@ static void fireBullet()
 	bullet->texture = bulletTexture;
 	bullet->width = 16;
 	bullet->height = 8;
-
+	bullet->side = PLAYER_SIDE;
 
 	SDL_QueryTexture(bullet->texture, NULL, NULL, &bullet->width, &bullet->height);
 	bullet->position[1] += (player->height / 2);
 
 	//Frames before firing again
 	player->reload = 8;
+}
+
+static bool bulletHitFighter(Entity* b)
+{
+	Entity* e;
+	for (e = stage.fighterHead.next; e != NULL; e = e->next)
+	{
+		if (e->side != b->side && collision(b->position[0], b->position[1], b->width, b->height, e->position[0], e->position[1], e->width, e->height))
+		{
+			b->health = 0;
+			e->health = 0;
+			return true;
+		}
+	}
+	return false;
 }
 
 static void doPlayer(void)
@@ -96,7 +112,7 @@ static void doBullets(void)
 	{
 		b->position += b->deltaPosition;
 
-		if (b->position[0] > SCREEN_WIDTH)
+		if (bulletHitFighter(b) || b->position[0] > SCREEN_WIDTH)
 		{
 			if(b == stage.bulletTail)
 			{
@@ -122,7 +138,7 @@ static void doFighters(void)
 		e->position += e->deltaPosition;
 
 		//Handling when enemy goes off screen
-		if (e != player && e->position[0] < -e->width)
+		if (e != player && (e->position[0] < -e->width || e->health == 0))
 		{
 			if (e == stage.fighterTail)
 			{
@@ -134,6 +150,8 @@ static void doFighters(void)
 			free(e);
 			e = prev;
 		}
+
+		prev = e;
 	}
 }
 
@@ -152,7 +170,9 @@ static void spawnEnemies()
 		enemy->texture = enemyTexture;
 		enemy->width = 32;
 		enemy->height = 32;
+		enemy->side = ALIEN_SIDE;
 		SDL_QueryTexture(enemy->texture, NULL, NULL, &enemy->width, &enemy->height);
+		enemy->health = 1;
 
 		//Setting the velocity vector
 		//Random speed moving to the left, since they spawn on the right

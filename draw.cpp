@@ -6,7 +6,7 @@ using namespace std;
 
 void prepareScene(void)
 {
-	SDL_SetRenderDrawColor(app.renderer, 96, 128, 255, 255);
+	SDL_SetRenderDrawColor(app.renderer, 55, 55, 55, 255);
 	SDL_RenderClear(app.renderer);
 }
 
