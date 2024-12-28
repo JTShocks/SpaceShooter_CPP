@@ -1,6 +1,7 @@
 #pragma once
 #define SCREEN_WIDTH	1280
 #define SCREEN_HEIGHT	720
+#define FPS 60
 
 //Player values
 #define PLAYER_SPEED		4
@@ -10,3 +11,6 @@
 
 #define PLAYER_SIDE 0
 #define ALIEN_SIDE 1
+
+#define ALIEN_BULLET_SPEED 8
+

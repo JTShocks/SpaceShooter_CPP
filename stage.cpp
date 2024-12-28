@@ -8,8 +8,10 @@ Entity* player;
 
 SDL_Texture* bulletTexture;
 SDL_Texture* enemyTexture;
+SDL_Texture* enemyBulletTexture;
 
 int enemySpawnTimer;
+int stageResetTimer;
 
 static void initPlayer()
 {
@@ -226,20 +228,45 @@ static void draw(void)
 	drawFighters();
 }
 
-
-void initStage(void)
+static void resetStage(void)
 {
-	app.delegate.logic = logic;
-	app.delegate.draw = draw;
+	Entity* e;
+	while (stage.fighterHead.next)
+	{
+		e = stage.fighterHead.next;
+		stage.fighterHead.next = e->next;
+		free(e);
+	}
+
+	while (stage.bulletHead.next)
+	{
+		e = stage.bulletHead.next;
+		stage.bulletHead.next = e->next;
+		free(e);
+	}
 
 	stage.fighterTail = &stage.fighterHead;
 	stage.bulletTail = &stage.bulletHead;
 
 	initPlayer();
 
+	enemySpawnTimer = 0;
+	stageResetTimer = FPS * 2;
+
+}
+
+
+void initStage(void)
+{
+	app.delegate.logic = logic;
+	app.delegate.draw = draw;
+
+
+
 	bulletTexture = loadTexture("Sprites/player_bullet.png");
+	enemyBulletTexture = loadTexture("Sprites/player_bullet.png");
 	enemyTexture = loadTexture("Sprites/player.png");
 
-	enemySpawnTimer = 0;
+
 
 }
