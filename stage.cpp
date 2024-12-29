@@ -28,6 +28,27 @@ static void initPlayer()
 
 }
 
+static void fireAlienBullet(Entity* e)
+{
+	Entity* bullet = new Entity();
+	stage.bulletTail->next = bullet;
+	stage.bulletTail = bullet;
+
+	bullet->position = e->position;
+	bullet->deltaPosition[0] = ALIEN_BULLET_SPEED;
+	bullet->health = 1;
+	bullet->texture = enemyBulletTexture;
+	bullet->width = 16;
+	bullet->height = 8;
+	bullet->side = ALIEN_SIDE;
+
+	SDL_QueryTexture(bullet->texture, NULL, NULL, &bullet->width, &bullet->height);
+	bullet->position[1] += (e->height / 2);
+
+	//Frames before firing again
+	e->reload = (rand()% FPS*2);
+}
+
 static void fireBullet()
 {
 	Entity* bullet = new Entity();
@@ -66,37 +87,41 @@ static bool bulletHitFighter(Entity* b)
 
 static void doPlayer(void)
 {
-	player->deltaPosition = glm::vec2(0, 0);
+	if (player != NULL)
+	{
+		player->deltaPosition = glm::vec2(0, 0);
 
-	if (player->reload > 0)
-	{
-		player->reload--;
+		if (player->reload > 0)
+		{
+			player->reload--;
+		}
+
+		if (app.keyboard[SDL_SCANCODE_DOWN])
+		{
+			player->deltaPosition[1] = PLAYER_SPEED;
+		}
+		if (app.keyboard[SDL_SCANCODE_UP])
+		{
+			player->deltaPosition[1] = -PLAYER_SPEED;
+		}
+		if (app.keyboard[SDL_SCANCODE_RIGHT])
+		{
+			player->deltaPosition[0] = PLAYER_SPEED;
+		}
+		if (app.keyboard[SDL_SCANCODE_LEFT])
+		{
+			player->deltaPosition[0] = -PLAYER_SPEED;
+		}
+
+		//Firing bullets
+		if (app.keyboard[SDL_SCANCODE_LCTRL] && player->reload == 0)
+		{
+			fireBullet();
+		}
+
+		player->position += player->deltaPosition;
 	}
 
-	if (app.keyboard[SDL_SCANCODE_DOWN])
-	{
-		player->deltaPosition[1] = PLAYER_SPEED;
-	}
-	if (app.keyboard[SDL_SCANCODE_UP])
-	{
-		player->deltaPosition[1] = -PLAYER_SPEED;
-	}
-	if (app.keyboard[SDL_SCANCODE_RIGHT])
-	{
-		player->deltaPosition[0] = PLAYER_SPEED;
-	}
-	if (app.keyboard[SDL_SCANCODE_LEFT])
-	{
-		player->deltaPosition[0] = -PLAYER_SPEED;
-	}
-
-	//Firing bullets
-	if (app.keyboard[SDL_SCANCODE_LCTRL] && player->reload == 0)
-	{
-		fireBullet();
-	}
-
-	player->position += player->deltaPosition;
 }
 
 
@@ -114,7 +139,7 @@ static void doBullets(void)
 	{
 		b->position += b->deltaPosition;
 
-		if (bulletHitFighter(b) || b->position[0] > SCREEN_WIDTH)
+		if (bulletHitFighter(b) || b->position[0] < -b->width|| b->position[1] < -b->height || b->position[0] > SCREEN_WIDTH ||b->position[0] > SCREEN_HEIGHT)
 		{
 			if(b == stage.bulletTail)
 			{
@@ -142,11 +167,18 @@ static void doFighters(void)
 		//Handling when enemy goes off screen
 		if (e != player && (e->position[0] < -e->width || e->health == 0))
 		{
+			e->health = 0;
+		}
+		if (e->health == 0)
+		{
+			if (e == player)
+			{
+				player = NULL;
+			}
 			if (e == stage.fighterTail)
 			{
 				stage.fighterTail = prev;
 			}
-
 			//Updating the chain of currently loaded fighters and freeing space for new fighters
 			prev->next = e->next;
 			free(e);
@@ -154,6 +186,18 @@ static void doFighters(void)
 		}
 
 		prev = e;
+	}
+}
+
+static void doEnemies(void)
+{
+	Entity* e;
+	for (e = stage.fighterHead.next; e != NULL; e = e->next)
+	{
+		if (e != player && player != NULL && --e->reload <= 0)
+		{
+			fireAlienBullet(e);
+		}
 	}
 }
 
@@ -173,6 +217,7 @@ static void spawnEnemies()
 		enemy->width = 32;
 		enemy->height = 32;
 		enemy->side = ALIEN_SIDE;
+		enemy->reload = FPS * (1 + (rand() % 3));
 		SDL_QueryTexture(enemy->texture, NULL, NULL, &enemy->width, &enemy->height);
 		enemy->health = 1;
 
@@ -186,12 +231,40 @@ static void spawnEnemies()
 
 	}
 }
+
+static void clipPlayer(void)
+{
+	if (player != NULL)
+	{
+		if (player->position[0] < 0)
+		{
+			player->position[0] = 0;
+		}
+		if (player->position[1] < 0)
+		{
+			player->position[1] = 0;
+		}
+		if (player->position[0] > SCREEN_WIDTH/2)
+		{
+			player->position[0] = SCREEN_WIDTH / 2;
+		}
+		if (player->position[1] > SCREEN_HEIGHT - player->height)
+		{
+			player->position[1] = SCREEN_HEIGHT - player->height;
+		}
+	}
+}
 static void logic(void)
 {
 	doPlayer();
 	doFighters();
 	doBullets();
 	spawnEnemies();
+
+	if (player == NULL && --stageResetTimer <= 0)
+	{
+		resetStage();
+	}
 }
 
 
