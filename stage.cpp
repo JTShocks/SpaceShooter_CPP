@@ -36,7 +36,7 @@ static void fireAlienBullet(Entity* e)
 	stage.bulletTail = bullet;
 
 	bullet->position = e->position;
-	bullet->deltaPosition[0] = ALIEN_BULLET_SPEED;
+	bullet->deltaPosition[0] = -ALIEN_BULLET_SPEED;
 	bullet->health = 1;
 	bullet->texture = enemyBulletTexture;
 	bullet->width = 16;
@@ -140,7 +140,7 @@ static void doBullets(void)
 	{
 		b->position += b->deltaPosition;
 
-		if (bulletHitFighter(b) || b->position[0] < -b->width|| b->position[1] < -b->height || b->position[0] > SCREEN_WIDTH ||b->position[0] > SCREEN_HEIGHT)
+		if (bulletHitFighter(b) || b->position[0] < -b->width|| b->position[1] < -b->height || b->position.x > SCREEN_WIDTH ||b->position.y > SCREEN_HEIGHT)
 		{
 			if(b == stage.bulletTail)
 			{
@@ -257,16 +257,19 @@ static void clipPlayer(void)
 		}
 	}
 }
+
+//Resetting the game after the player dies
 static void resetStage(void)
 {
 	Entity* e;
+	//Go through all the fighters and free them from memory
 	while (stage.fighterHead.next)
 	{
 		e = stage.fighterHead.next;
 		stage.fighterHead.next = e->next;
 		free(e);
 	}
-
+	//Go through all the bullets and free them from memory
 	while (stage.bulletHead.next)
 	{
 		e = stage.bulletHead.next;
@@ -274,7 +277,7 @@ static void resetStage(void)
 		free(e);
 	}
 
-	
+	//Reinitialize the stage and player
 	stage.fighterTail = &stage.fighterHead;
 	stage.bulletTail = &stage.bulletHead;
 
@@ -305,9 +308,9 @@ static void drawPlayer()
 {
 	
 	//Draw the player sprite
-	if (player != NULL)
+	if (player != NULL) //Safety for when the player dies it doesn't crash
 	{
-		blit(player->texture, player->position[0], player->position[1]);
+		blit(player->texture, player->position.x, player->position.y);
 	}
 
 }
