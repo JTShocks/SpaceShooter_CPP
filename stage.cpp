@@ -10,8 +10,8 @@ SDL_Texture* bulletTexture;
 SDL_Texture* enemyTexture;
 SDL_Texture* enemyBulletTexture;
 
-int enemySpawnTimer;
-int stageResetTimer;
+int enemySpawnTimer = 0;
+int stageResetTimer = 0;
 
 static void initPlayer()
 {
@@ -23,6 +23,7 @@ static void initPlayer()
 	player->position = glm::vec2(100, 100);
 	player->texture = loadTexture("Sprites/player.png");
 	player->side = PLAYER_SIDE;
+	player->health = 1;
 	SDL_QueryTexture(player->texture, NULL, NULL, &player->width, &player->height);
 	
 
@@ -165,16 +166,18 @@ static void doFighters(void)
 		e->position += e->deltaPosition;
 
 		//Handling when enemy goes off screen
-		if (e != player && (e->position[0] < -e->width || e->health == 0))
+		if (e != player && (e->position[0] < -e->width))
 		{
 			e->health = 0;
 		}
+
 		if (e->health == 0)
 		{
 			if (e == player)
 			{
 				player = NULL;
 			}
+
 			if (e == stage.fighterTail)
 			{
 				stage.fighterTail = prev;
@@ -250,9 +253,36 @@ static void clipPlayer(void)
 		}
 		if (player->position[1] > SCREEN_HEIGHT - player->height)
 		{
-			player->position[1] = SCREEN_HEIGHT - player->height;
+			player->position.y = SCREEN_HEIGHT - player->height;
 		}
 	}
+}
+static void resetStage(void)
+{
+	Entity* e;
+	while (stage.fighterHead.next)
+	{
+		e = stage.fighterHead.next;
+		stage.fighterHead.next = e->next;
+		free(e);
+	}
+
+	while (stage.bulletHead.next)
+	{
+		e = stage.bulletHead.next;
+		stage.bulletHead.next = e->next;
+		free(e);
+	}
+
+	
+	stage.fighterTail = &stage.fighterHead;
+	stage.bulletTail = &stage.bulletHead;
+
+	initPlayer();
+
+	enemySpawnTimer = 0;
+	stageResetTimer = FPS * 2;
+
 }
 static void logic(void)
 {
@@ -260,6 +290,8 @@ static void logic(void)
 	doFighters();
 	doBullets();
 	spawnEnemies();
+	doEnemies();
+	clipPlayer();
 
 	if (player == NULL && --stageResetTimer <= 0)
 	{
@@ -271,8 +303,13 @@ static void logic(void)
 
 static void drawPlayer()
 {
+	
 	//Draw the player sprite
-	blit(player->texture, player->position[0],player->position[1]);
+	if (player != NULL)
+	{
+		blit(player->texture, player->position[0], player->position[1]);
+	}
+
 }
 
 static void drawBullets()
@@ -301,32 +338,7 @@ static void draw(void)
 	drawFighters();
 }
 
-static void resetStage(void)
-{
-	Entity* e;
-	while (stage.fighterHead.next)
-	{
-		e = stage.fighterHead.next;
-		stage.fighterHead.next = e->next;
-		free(e);
-	}
 
-	while (stage.bulletHead.next)
-	{
-		e = stage.bulletHead.next;
-		stage.bulletHead.next = e->next;
-		free(e);
-	}
-
-	stage.fighterTail = &stage.fighterHead;
-	stage.bulletTail = &stage.bulletHead;
-
-	initPlayer();
-
-	enemySpawnTimer = 0;
-	stageResetTimer = FPS * 2;
-
-}
 
 
 void initStage(void)
@@ -334,12 +346,17 @@ void initStage(void)
 	app.delegate.logic = logic;
 	app.delegate.draw = draw;
 
+	stage.fighterTail = &stage.fighterHead;
+	stage.bulletTail = &stage.bulletHead;
 
+	initPlayer();
 
 	bulletTexture = loadTexture("Sprites/player_bullet.png");
 	enemyBulletTexture = loadTexture("Sprites/player_bullet.png");
 	enemyTexture = loadTexture("Sprites/player.png");
 
+	enemySpawnTimer = 0;
 
+	resetStage();
 
 }
